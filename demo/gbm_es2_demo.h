@@ -29,70 +29,73 @@
 #include "egl_drm_glue.h"
 
 namespace demo {
+class ES2Cube
+{
+public:
+    ES2Cube() = default;
+    virtual ~ES2Cube() = default;
+    ES2Cube(const ES2Cube &) = delete;
+    void operator=(const ES2Cube &) = delete;
 
-class ES2Cube {
- public:
-  ES2Cube() = default;
-  virtual ~ES2Cube() = default;
-  ES2Cube(const ES2Cube&) = delete;
-  void operator=(const ES2Cube&) = delete;
-
-  virtual bool Initialize(std::string card, bool atomic) = 0;
-  virtual bool Run() = 0;
+    virtual bool Initialize(std::string card, bool atomic) = 0;
+    virtual bool Run() = 0;
 };
 
-class ES2CubeImpl : public ES2Cube {
- public:
-  ES2CubeImpl() = default;
-  ~ES2CubeImpl() override;
-  bool Initialize(std::string card, bool atomic) override;
-  bool Run() override;
+class ES2CubeImpl : public ES2Cube
+{
+public:
+    ES2CubeImpl() = default;
+    ~ES2CubeImpl() override;
+    bool Initialize(std::string card, bool atomic) override;
+    bool Run() override;
 
- private:
-  bool InitializeGL();
-  bool InitializeGLProgram();
-  void DidSwapBuffer(GLuint gl_framebuffer, unsigned long usec);
-  void Draw(unsigned long usec);
+private:
+    bool InitializeGL();
+    bool InitializeGLProgram();
+    void DidSwapBuffer(GLuint gl_framebuffer, unsigned long usec);
+    void Draw(unsigned long usec);
 
-  std::unique_ptr<ged::EGLDRMGlue> egl_;
-  ged::EGLDRMGlue::Size display_size_ = {};
-  GLuint program_ = 0;
-  GLint modelviewmatrix_ = 0;
-  GLint modelviewprojectionmatrix_ = 0;
-  GLint normalmatrix_ = 0;
-  GLuint vbo_ = 0;
+    std::unique_ptr<ged::EGLDRMGlue> egl_;
+    ged::EGLDRMGlue::Size display_size_ = {};
+    GLuint program_ = 0;
+    GLint modelviewmatrix_ = 0;
+    GLint modelviewprojectionmatrix_ = 0;
+    GLint normalmatrix_ = 0;
+    GLint sourceTexture_ = 0;
+    GLint samplerlocation_ = 0;
+    GLuint vbo_ = 0;
 };
 
-class ES2CubeMapImpl : public ES2Cube {
- public:
-  ES2CubeMapImpl() = default;
-  ~ES2CubeMapImpl() override;
+class ES2CubeMapImpl : public ES2Cube
+{
+public:
+    ES2CubeMapImpl() = default;
+    ~ES2CubeMapImpl() override;
 
-  bool Initialize(std::string card, bool atomic) override;
-  bool Run() override;
+    bool Initialize(std::string card, bool atomic) override;
+    bool Run() override;
 
- private:
-  bool InitializeGL();
-  bool InitializeGLProgram();
-  void DidSwapBuffer(GLuint gl_framebuffer, unsigned long usec);
-  void Draw(unsigned long usec);
-  void UpdateStreamTexture(unsigned long usec);
+private:
+    bool InitializeGL();
+    bool InitializeGLProgram();
+    void DidSwapBuffer(GLuint gl_framebuffer, unsigned long usec);
+    void Draw(unsigned long usec);
+    void UpdateStreamTexture(unsigned long usec);
 
-  std::unique_ptr<ged::EGLDRMGlue> egl_;
-  ged::EGLDRMGlue::Size display_size_ = {};
-  GLuint program_ = 0;
-  GLint modelviewmatrix_ = 0;
-  GLint modelviewprojectionmatrix_ = 0;
-  GLint normalmatrix_ = 0;
-  GLuint vbo_ = 0;
-  static const size_t s_length = 512;
-  std::unique_ptr<ged::StreamTexture> stream_texture_;
+    std::unique_ptr<ged::EGLDRMGlue> egl_;
+    ged::EGLDRMGlue::Size display_size_ = {};
+    GLuint program_ = 0;
+    GLint modelviewmatrix_ = 0;
+    GLint modelviewprojectionmatrix_ = 0;
+    GLint normalmatrix_ = 0;
+    GLuint vbo_ = 0;
+    static const size_t s_length = 512;
+    std::unique_ptr<ged::StreamTexture> stream_texture_;
 
-  // For check pattern.
-  float last_progress_ = 0.f;
-  bool even_turn_ = true;
+    // For check pattern.
+    float last_progress_ = 0.f;
+    bool even_turn_ = true;
 };
-
 }  // namespace demo
 
 #endif

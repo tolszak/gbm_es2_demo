@@ -38,3 +38,6 @@ file(GLOB all_SRC
 add_executable(${PROGRAM} ${all_SRC})
 target_link_libraries(${PROGRAM} ${EXTRA_LIBS})
 MESSAGE(${PROGRAM} " links " ${EXTRA_LIBS})
+
+
+install(TARGETS ${PROGRAM} DESTINATION bin)

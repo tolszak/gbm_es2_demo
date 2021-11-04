@@ -112,7 +112,7 @@ impl DrmDevice {
     }
 
     pub fn open_global() -> Self {
-        Self::open("/dev/dri/card0")
+        Self::open("/dev/dri/card1")
     }
 
     pub fn open_control() -> Self {

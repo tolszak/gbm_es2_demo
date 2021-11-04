@@ -28,63 +28,67 @@
 
 #include "gbm_es2_demo.h"
 
-static const char* shortopts = "AD:M";
+static const char *shortopts = "AD:M";
 
-static const struct option longopts[] = {{"atomic", no_argument, 0, 'A'},
+static const struct option longopts[] = {{
+                                             "atomic", no_argument, 0, 'A'
+                                         },
                                          {"device", required_argument, 0, 'D'},
                                          {"map", no_argument, 0, 'M'},
                                          {0, 0, 0, 0}};
 
-static void usage(const char* name) {
-  printf(
-      "Usage: %s [-ADMmV]\n"
-      "\n"
-      "options:\n"
-      "    -A, --atomic             use atomic modesetting and fencing\n"
-      "    -D, --device=DEVICE      use the given device\n"
-      "    -M, --map                mmap test\n",
-      name);
+static void usage(const char *name)
+{
+    printf(
+        "Usage: %s [-ADMmV]\n"
+        "\n"
+        "options:\n"
+        "    -A, --atomic             use atomic modesetting and fencing\n"
+        "    -D, --device=DEVICE      use the given device\n"
+        "    -M, --map                mmap test\n",
+        name);
 }
 
-int main(int argc, char* argv[]) {
-  const char* card = "/dev/dri/card0";
-  bool atomic = false;
-  bool map = false;
-  int opt;
+int main(int argc, char *argv[])
+{
+    const char *card = "/dev/dri/card1";
 
-  while ((opt = getopt_long_only(argc, argv, shortopts, longopts, nullptr)) !=
-         -1) {
-    switch (opt) {
-      case 'A':
-        atomic = true;
-        break;
-      case 'D':
-        card = optarg;
-        break;
-      case 'M':
-        map = true;
-        break;
-      default:
-        usage(argv[0]);
+    bool atomic = false;
+    bool map = false;
+    int opt;
+
+    while ((opt = getopt_long_only(argc, argv, shortopts, longopts, nullptr))
+           != -1) {
+        switch (opt) {
+        case 'A':
+            atomic = true;
+            break;
+        case 'D':
+            card = optarg;
+            break;
+        case 'M':
+            map = true;
+            break;
+        default:
+            usage(argv[0]);
+            return -1;
+        }
+    }
+
+    std::unique_ptr<demo::ES2Cube> demo;
+    if (map)
+        demo.reset(new demo::ES2CubeMapImpl());
+    else
+        demo.reset(new demo::ES2CubeImpl());
+    if (!demo->Initialize(card, atomic)) {
+        fprintf(stderr, "failed to initialize ES2Cube.\n");
         return -1;
     }
-  }
 
-  std::unique_ptr<demo::ES2Cube> demo;
-  if (map) {
-    demo.reset(new demo::ES2CubeMapImpl());
-  } else {
-    demo.reset(new demo::ES2CubeImpl());
-  }
-  if (!demo->Initialize(card, atomic)) {
-    fprintf(stderr, "failed to initialize ES2Cube.\n");
-    return -1;
-  }
+    if (!demo->Run()) {
+        fprintf(stderr, "something wrong happened.\n");
+        return -1;
+    }
 
-  if (!demo->Run()) {
-    fprintf(stderr, "something wrong happened.\n");
-    return -1;
-  }
-
-  return 0;
+    return 0;
 }
